@@ -9,6 +9,13 @@ class Plot:
     """ In its more general representation, a plot is made of 7 arrays and a filename:
     x, xmin, xmax
     y, ymin, ymax, stat_err
+
+    It can be initialised with a filename, giving the columns that corresponds to each data
+
+    or from a dataset, directly inputing the columns
+    [x, xmin, xmax]
+    [y, ymin, ymax, ymin, ymax, ymin, ymax, ... , stat_err]
+    everything other than x and y is optional
     """
 
     def __init__(self, filename = None, columns_x = [0,1,2], columns_y = [3,4,5,6], 
@@ -17,7 +24,7 @@ class Plot:
         self.ylabel = None
         self.legend = None   
         self.fmt = "."
-        self.color = 'blue'
+        self.color = None  
         if filename:
             self.filename = filename
             self._unpack_from_file(filename, columns_x, columns_y)
@@ -32,7 +39,8 @@ class Plot:
 
     def set_label_parameters(self, xlabel = None, ylabel = None, legend = None):
         if xlabel: self.xlabel = xlabel
-        if ylabel: self.ylabel = ylabel
+        if ylabel: 
+            self.ylabel = ylabel
         if legend: self.legend = legend
 
     def set_plot_parameters(self, color = 'blue', marker = '.', line = None, fmt = None):
@@ -53,12 +61,12 @@ class Plot:
         From some set of arrays it returns a central value, a minimum and maximum
         """
         la = len(arrays)
-        center = arrays[0]
+        center = np.array(arrays[0])
         if la == 1:
-            min_arr = arrays[0]
-            max_arr = arrays[0]
+            min_arr = np.array(arrays[0])
+            max_arr = np.array(arrays[0])
         elif la == 2:
-            error = arrays[1]
+            error = np.array(arrays[1])
             min_arr = center - error
             max_arr = center + error
         else:
@@ -66,7 +74,7 @@ class Plot:
             min_l = []
             n_points = len(center)
             if la % 2 == 0:
-                error = arrays[-1]
+                error = np.array(arrays[-1])
                 la_wo = la-1
             else:
                 error = np.zeros(n_points)
@@ -119,7 +127,7 @@ class Plot:
         self.x, self.xmin, self.xmax = self._create_envelope(x_data)
         self.y, self.ymin, self.ymax = self._create_envelope(y_data)
 
-        if len(y_data) == 2 or len(y_data) == 4:
+        if len(y_data) % 2 == 0:
             self.stat_err = y_data[-1]
         else:
             self.stat_err = np.zeros(len(self.x))
@@ -130,9 +138,9 @@ class Plot:
         """
 
         if np.array_equal(self.xmin, self.xmax):
-            delta = self.x[1] - self.x[2]
-            self.xmin = np.array([i-delta for i in self.x])
-            self.xmax = np.array([i+delta for i in self.x])
+            delta = (self.x[-1] - self.x[0])/(len(self.x)-1.0)
+            self.xmin = np.array([i-delta/2.0 for i in self.x])
+            self.xmax = np.array([i+delta/2.0 for i in self.x])
 
 
 
@@ -140,9 +148,9 @@ class Plot:
 
     def get_total(self, xmin = None, xmax = None):
         if not xmin:
-            xmin = self.x[0]
+            xmin = self.xmin[0]
         if not xmax:
-            xmax = self.x[-1]
+            xmax = self.xmax[-1]
 
         y = self.y[ (self.x >= xmin) & (self.x <= xmax) ]
         dy = self.stat_err[ (self.x >= xmin) & (self.x <= xmax) ]

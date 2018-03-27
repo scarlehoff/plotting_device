@@ -21,7 +21,7 @@ def draw_boxxyerrorbar(axis, plot, alpha=0.25):
                          edgecolor='None', alpha=alpha)
     axis.add_collection(pc)
 
-def gnu_errorbar(axis, plot, padding = 1.05, show_legend = True, histeps = False):
+def gnu_errorbar(axis, plot, padding = 1.05, show_legend = True, histeps = False, color = None):
     """
     Plot x, y, dy in a gnuplot-like style
     axis should be a matplotlib axis object 
@@ -44,14 +44,21 @@ def gnu_errorbar(axis, plot, padding = 1.05, show_legend = True, histeps = False
     axis.set_ylim( (min(cur_ylim[0], min(plot.ymin)), max(cur_ylim[1], padding*max(plot.ymax))) )
     axis.set_xlim( (min(cur_xlim[0], min(plot.xmin)), max(cur_xlim[1], max(plot.xmax))) )
 
+    # If the plot contains a color and there is no color in the input arguments, use that:
+    if not color:
+        plot.color
+
     # Plot errorbars
-    eb = axis.errorbar(plot.x, plot.y, yerr=plot.stat_err, label=plot.legend, fmt=plot.fmt)
-    color = eb[0].get_color()
+    eb = axis.errorbar(plot.x, plot.y, yerr=plot.stat_err, label=plot.legend, color = color, fmt=plot.fmt)
+    if not color: # maybe the plot did not contain a color, let's give it some color
+        color = eb[0].get_color()
+        # Update the plot color
+        plot.set_plot_parameters(color = color)
 
     # Plot histeps
     if histeps:
-        axis.step(plot.xmin, plot.y, where='post', color = color)
-        axis.step(plot.xmax[-2:], plot.y[-2:], where='pre', color = color)
+        axis.step(plot.xmin, plot.y, where='post', color = plot.color)
+        axis.step(plot.xmax[-2:], plot.y[-2:], where='pre', color = plot.color)
 
     # If there are other customization options active, draw them
     if plot.xlabel: axis.set_xlabel(plot.xlabel)

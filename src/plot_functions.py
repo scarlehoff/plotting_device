@@ -32,7 +32,7 @@ def draw_canvas(plt, nrows = 2, ncols = 1, gridspec_kw = None, sharex = True):
             'height_ratios' : ratios,
             'hspace' : 0,
             'left' : 0.0,
-            'right' : 1.0,
+            'right' : 2.0,
             'bottom' : 0.0,
             'top' : 1.0 }
     fig, axis = plt.subplots(nrows, ncols, sharex = sharex, gridspec_kw = gridspec_kw)
@@ -53,7 +53,7 @@ def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), tick_st
     """
     from matplotlib.ticker import FormatStrFormatter
     gridspec_kw = { 'height_ratios' : [1.5, 1], 'hspace' : 0,
-            'left' : 0.0, 'right' : 1.0, 'bottom' : 0.0, 'top' : 1.0 }
+            'left' : 0.0, 'right' : 2.0, 'bottom' : 0.0, 'top' : 1.0 }
     fig, axis = draw_canvas(plt, 2, 1, gridspec_kw = gridspec_kw)
 
     yticks = np.arange(ratio_range[0], ratio_range[1]*1.05, tick_step)

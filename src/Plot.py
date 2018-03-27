@@ -43,14 +43,12 @@ class Plot:
             self.ylabel = ylabel
         if legend: self.legend = legend
 
-    def set_plot_parameters(self, color = 'blue', marker = '.', line = None, fmt = None):
+    def set_plot_parameters(self, color = 'blue', marker = '.', line = '', fmt = None):
         self.color = color
         if fmt:
             self.fmt = fmt
         else:
-            self.fmt = "{0}{1}".format(color[0], marker)
-            if line:
-                self.fmt += line
+            self.fmt = "{0}{1}".format(marker, line)
 
     def _print(self, msg):
         if not self.quiet:

@@ -30,10 +30,18 @@ def gnu_errorbar(axis, plot, padding = 1.05, show_legend = True, histeps = False
     if histeps = True is selected, gnuplot-like histeps are also printed
     """
     # Set up the limits (make sure we don't override previous limits)
-    cur_ylim = axis.get_ylim()
-    axis.set_ylim( (min(cur_ylim[0], min(plot.ymin)), max(cur_ylim[1], padding*max(plot.ymax))) )
+    try:
+        if axis.gnu_extended_object == "new":
+            axis.gnu_extended_object = "old"
+            cur_ylim = (plot.y[0], plot.y[0])
+            cur_xlim = (plot.x[0], plot.x[0])
+        else:
+            cur_ylim = axis.get_ylim()
+            cur_xlim = axis.get_xlim()
+    except:
+        raise Exception("Object type: {0} didn't have property gnu_extended_object set. Can't continue".format(type(axis)))
 
-    cur_xlim = axis.get_xlim()
+    axis.set_ylim( (min(cur_ylim[0], min(plot.ymin)), max(cur_ylim[1], padding*max(plot.ymax))) )
     axis.set_xlim( (min(cur_xlim[0], min(plot.xmin)), max(cur_xlim[1], max(plot.xmax))) )
 
     # Plot errorbars
@@ -52,9 +60,9 @@ def gnu_errorbar(axis, plot, padding = 1.05, show_legend = True, histeps = False
     if plot.legend and show_legend: axis.legend()
     axis.grid(linestyle = '--')
 
-
 def extend_all(plt):
     from types import MethodType
     plt.draw_boxxyerrorbar = MethodType(draw_boxxyerrorbar, plt)
     plt.gnu_errorbar = MethodType(gnu_errorbar, plt)
+    plt.gnu_extended_object = "new"
     return plt

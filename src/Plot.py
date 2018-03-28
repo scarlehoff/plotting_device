@@ -144,6 +144,22 @@ class Plot:
 
     # Output functions
 
+    def get_integral(self, xmin = None, xmax = None):
+        if not xmin:
+            xmin = self.xmin[0]
+        if not xmax:
+            xmax = self.xmax[-1]
+
+        dy = self.stat_err[ (self.x >= xmin) & (self.x <= xmax) ]
+        total_dy = np.sqrt(sum([i*i for i in dy]))
+
+        total_y = 0
+        for xm,xp,y in zip(self.xmin, self.xmax, self.y):
+            if (xm >= xmin) & (xp <= xmax):
+                total_y += y*(xp-xm)
+        return total_y, total_dy
+
+
     def get_total(self, xmin = None, xmax = None):
         if not xmin:
             xmin = self.xmin[0]
@@ -153,11 +169,8 @@ class Plot:
         y = self.y[ (self.x >= xmin) & (self.x <= xmax) ]
         dy = self.stat_err[ (self.x >= xmin) & (self.x <= xmax) ]
 
-        total_y = sum(y)
-        total_dy = np.sqrt(sum([i*i for i in dy]))
-
         total_y = sum(self.y[ (self.x >= xmin) & (self.x <= xmax) ])
-        total_dy = np.sqrt(sum([ i*i for i in self.stat_err ]))
+        total_dy = np.sqrt(sum([i*i for i in dy]))
 
         return total_y, total_dy
 

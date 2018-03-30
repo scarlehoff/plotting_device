@@ -134,7 +134,11 @@ class Plot:
         """
         Ensures xmin/xmax actually make sense
         """
-
+        if self.x.shape == ():
+            # We are dealing with a scalar
+            self.xmin = self.x
+            self.xmax = self.x
+            return
         if np.array_equal(self.xmin, self.xmax):
             delta = (self.x[-1] - self.x[0])/(len(self.x)-1.0)
             self.xmin = np.array([i-delta/2.0 for i in self.x])

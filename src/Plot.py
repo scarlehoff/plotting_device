@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
-import src.my_maths as mm
-from pdb import set_trace as dbg
+from NewNumber import NewNumber
 
 class Plot:
 
@@ -193,6 +192,19 @@ class Plot:
     def __str__(self):
         return "Plot object for '{0}'".format(self.filename)
 
+    def _divide_by_NewNumber(self, divide_number):
+        import copy
+        new_plot = copy.copy(self)
+        new_plot.ymin = self.ymin / divide_number.x
+        new_plot.ymax = self.ymax / divide_number.x
+        new_plot.y = self.y / divide_number.x
+        central_dy = []
+        for i, di in zip(self.y , self.stat_err):
+            ydy = NewNumber(y,di) / divide_number
+            central_dy.append(ydy.dx)
+        new_plot.dy = central_dy
+        return new_plot
+
     def __truediv__(self, divider): 
         if isinstance(divider, type(self)): # Ratio self / plot
             plot = divider
@@ -201,39 +213,23 @@ class Plot:
                 raise Exception("You are trying to take the ratio of two plots with different x axis")
             x_data = [self.x, self.xmin, self.xmax]
             # Take ratio of central values
-            min_y = [mm.divide(i,j) for i,j in zip(self.ymin, plot.y)]
-            max_y = [mm.divide(i,j) for i,j in zip(self.ymax, plot.y)]
+            min_y = [i/j for i,j in zip(self.ymin, plot.y)]
+            max_y = [i/j for i,j in zip(self.ymax, plot.y)]
             central_y = []
             central_dy = []
             for i,j, di,dj in zip(self.y, plot.y, self.stat_err, plot.stat_err):
-                y,dy = mm.division_w_err(i,j, da=di,db=dj)
-                central_y.append(y)
-                central_dy.append(dy)
+                ydy = NewNumber(i,di) / NewNumber(j, dj)
+                central_y.append(ydy.x)
+                central_dy.append(ydy.dx)
             y_data = [central_y, min_y, max_y, central_dy]
             new_plot = Plot(x_data = x_data, y_data = y_data)
             new_plot.set_label_parameters(legend = "{0}/{1}".format(self.legend, plot.legend))
             new_plot.set_label_parameters(xlabel = self.xlabel)
             new_plot.set_plot_parameters(fmt = self.fmt, color = self.color)
         elif isinstance(divider, float):
-            import copy
-            new_plot = copy.copy(self)
-            new_plot.y = self.y/divider
-            new_plot.ymin = self.ymin/divider
-            new_plot.ymax = self.ymax/divider
-            new_plot.stat_err = self.stat_err/divider
-        elif isinstance(divider, (tuple,list)):
-            import copy
-            new_plot = copy.copy(self)
-            new_plot.ymin = self.ymin/divider[0]
-            new_plot.ymax = self.ymax/divider[0]
-            central_y = []
-            central_dy = []
-            for i, di in zip(self.y, self.stat_err):
-                y,dy = mm.division_w_err(i,divider[0], da=di,db=divider[1])
-                central_y.append(y)
-                central_dy.append(dy)
-            new_plot.y = central_y
-            new_plot.stat_err = central_dy
+            return self._divide_by_NewNumber(NewNumber(divider,0.0))
+        elif isinstance(divide, (tuple,list)):
+            return self._divide_by_NewNumber(NewNumber(divider[0], divider[1]))
         else:
             raise Exception("Division between types 'Plot' and '{0}' not implemented".format(type(divider)))
         return new_plot

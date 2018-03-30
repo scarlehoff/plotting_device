@@ -1,4 +1,4 @@
-import src.extend_class as ec
+import extend_class as ec
 import numpy as np
 
 def default_plt():

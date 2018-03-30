@@ -46,6 +46,10 @@ def draw_boxxyerrorbar(axis, plot, alpha=0.25):
     r = boxxyerrorbar(plot.xmin, plot.xmax, plot.ymin, plot.ymax)
     pc = PatchCollection(r, facecolor=plot.color, 
                          edgecolor='None', alpha=alpha)
+    if not plot.color: # maybe the plot did not contain a color, let's give it some color!
+        color = pc[0].get_color()
+        # Update the plot color
+        plot.set_plot_parameters(color = color)
     axis.add_collection(pc)
 
 def gnu_histeps(axis, plot, show_legend = False, draw_labels = True):
@@ -75,11 +79,11 @@ def gnu_errorbar(axis, plot, padding = 0.05, draw_labels = True, show_legend = T
 
     # If the plot contains a color and there is no color in the input arguments, use that:
     if not color:
-        plot.color
+        color = plot.color
 
     # Plot errorbars
     eb = axis.errorbar(plot.x, plot.y, yerr=plot.stat_err, label=plot.legend, color = color, fmt=plot.fmt)
-    if not color: # maybe the plot did not contain a color, let's give it some color
+    if not color: # maybe the plot did not contain a color, let's give it some color!
         color = eb[0].get_color()
         # Update the plot color
         plot.set_plot_parameters(color = color)

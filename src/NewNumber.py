@@ -9,9 +9,15 @@ class NewNumber:
         for correct error propagation
     """
 
-    def __init__(self, x, dx):
+    def __init__(self, x, dx = 0.0):
         self.x = float(x)
         self.dx = float(dx)
+
+    def __str__(self):
+        if (self.dx == 0.0):
+            return str(self.x)
+        else:
+            return "{0} +/- {1}".format(self.x, self.dx)
 
     def _parse_number(self, number):
         """ 
@@ -49,7 +55,7 @@ class NewNumber:
         x, dx = self._parse_number(number)
         new_x = self.x / x
         a = pow( self.dx/x , 2)
-        b = pow( dx*self.x/x , 2)
+        b = pow( dx*self.x/x/x, 2)
         new_dx = np.sqrt(a + b)
         return NewNumber(new_x, new_dx)
 

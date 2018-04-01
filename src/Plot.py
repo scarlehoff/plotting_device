@@ -200,9 +200,9 @@ class Plot:
         new_plot.y = self.y / divide_number.x
         central_dy = []
         for i, di in zip(self.y , self.stat_err):
-            ydy = NewNumber(y,di) / divide_number
+            ydy = NewNumber(i,di) / divide_number
             central_dy.append(ydy.dx)
-        new_plot.dy = central_dy
+        new_plot.stat_err = central_dy
         return new_plot
 
     def __truediv__(self, divider): 
@@ -228,7 +228,7 @@ class Plot:
             new_plot.set_plot_parameters(fmt = self.fmt, color = self.color)
         elif isinstance(divider, float):
             return self._divide_by_NewNumber(NewNumber(divider,0.0))
-        elif isinstance(divide, (tuple,list)):
+        elif isinstance(divider, (tuple,list)):
             return self._divide_by_NewNumber(NewNumber(divider[0], divider[1]))
         else:
             raise Exception("Division between types 'Plot' and '{0}' not implemented".format(type(divider)))
@@ -245,7 +245,6 @@ if __name__ == "__main__":
     plot1 = Plot(file1, xcol, ycol)
     plot2 = Plot(file2, xcol, ycol)
 
-    print(plot1.get_total())
     print(plot2.get_total())
 
 

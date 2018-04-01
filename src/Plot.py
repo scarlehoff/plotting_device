@@ -153,13 +153,13 @@ class Plot:
         if not xmax:
             xmax = self.xmax[-1]
 
-        dy = self.stat_err[ (self.x >= xmin) & (self.x <= xmax) ]
-        total_dy = np.sqrt(sum([i*i for i in dy]))
-
         total_y = 0
-        for xm,xp,y in zip(self.xmin, self.xmax, self.y):
+        total_dy_sum = 0
+        for xm,xp,y,dy in zip(self.xmin, self.xmax, self.y, self.stat_err):
             if (xm >= xmin) & (xp <= xmax):
                 total_y += y*(xp-xm)
+                total_dy_sum += dy*dy
+        total_dy = np.sqrt(total_dy_sum)
         return total_y, total_dy
 
 

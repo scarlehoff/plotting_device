@@ -205,6 +205,38 @@ class Plot:
         new_plot.stat_err = central_dy
         return new_plot
 
+
+    # Plot Algebra
+    def _sum_plot(self, plot, factor = 1.0):
+        """
+        Overloads the addition and subtraction operations
+        returns a new instance of Plot
+        It's vital than the two plots are 100% compatible
+        ie, this function will sum all the y and needs that the x values are the same!
+        """
+        if not isinstance(plot, type(self)):
+            return Exception("You are trying to sum a plot and a {0}, you monster!".format(type(plot)))
+        # Check that the x, x.min, x.max values are exactly the same!
+        if not np.array_equal(self.x, plot.x) or not np.array_equal(self.xmin, plot.xmin) or not np.array_equal(self.xmax, plot.xmax):
+            return Exception("These two plots are not compatible")
+
+        x_data = [self.x, self.xmin, self.xmax]
+        new_y = self.y + plot.y*factor
+        new_ymin = self.ymin + plot.ymin*factor
+        new_ymax = self.ymax + plot.ymax*factor
+        new_stat_err = []
+        for i,j in zip(self.stat_err, plot.stat_err):
+            new_stat_err.append(np.sqrt(i*i + j*j))
+        y_data = [new_y, new_ymin, new_ymax, np.array(new_stat_err)]
+        new_plot = Plot(x_data = x_data, y_data = y_data)
+        new_plot.set_label_parameters(xlabel = self.xlabel, ylabel = self.ylabel)
+        return new_plot
+
+    def __add__(self, plot):
+        return self._sum_plot(plot, factor = 1.0)
+    def __sub__(self, plot):
+        return self._sum_plot(plot, factor = -1.0)
+
     def __truediv__(self, divider): 
         if isinstance(divider, type(self)): # Ratio self / plot
             plot = divider

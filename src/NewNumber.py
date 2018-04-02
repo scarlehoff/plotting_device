@@ -14,6 +14,17 @@ class NewNumber:
         self.dx = float(dx)
         self.prec = None
 
+    def _autogenerate_precision(self):
+        if self.prec:
+            # Precision has been set from outside
+            return 
+        precision = int(np.log10(self.dx)) - 1
+        if precision > 0:
+            self.set_precision(0)
+        else:
+            self.set_precision(-precision)
+            
+        
     def set_precision(self, precision):
         """  How many decimal places to print
         """
@@ -23,12 +34,9 @@ class NewNumber:
         if (self.dx == 0.0):
             return str(self.x)
         else:
-            if self.prec:
-                base_string = "{0:.{prec}f} +/- {1:.{prec}f}"
-                return base_string.format(self.x, self.dx, prec = self.prec)
-            else:
-                base_string = "{0} +/- {1}"
-                return base_string.format(self.x, self.dx)
+            self._autogenerate_precision()
+            base_string = "{0:.{prec}f} +/- {1:.{prec}f}"
+            return base_string.format(self.x, self.dx, prec = self.prec)
 
     def _parse_number(self, number):
         """ 

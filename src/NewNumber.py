@@ -12,12 +12,23 @@ class NewNumber:
     def __init__(self, x, dx = 0.0):
         self.x = float(x)
         self.dx = float(dx)
+        self.prec = None
+
+    def set_precision(self, precision):
+        """  How many decimal places to print
+        """
+        self.prec = precision
 
     def __str__(self):
         if (self.dx == 0.0):
             return str(self.x)
         else:
-            return "{0} +/- {1}".format(self.x, self.dx)
+            if self.prec:
+                base_string = "{0:.{prec}f} +/- {1:.{prec}f}"
+                return base_string.format(self.x, self.dx, prec = self.prec)
+            else:
+                base_string = "{0} +/- {1}"
+                return base_string.format(self.x, self.dx)
 
     def _parse_number(self, number):
         """ 

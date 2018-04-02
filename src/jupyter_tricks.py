@@ -31,7 +31,7 @@ class DataTable:
         if len(fields) != self.ncols:
             raise Exception("The number of fields provided do not match the current table size")
         self.rows.append(fields)
-    
+
     def str_latex(self, align = "c"):
         if "-" in self.h_sep or "_" in self.h_sep:
             latex_sep = "    \\\\ \hline\n"
@@ -64,7 +64,6 @@ class DataTable:
             lines.append(new_str)
             lines.append("    </tr>")
         lines.append("</table>")
-        lines.append("</div>")
         return "\n".join(lines)
     
     def jupyter_print(self):

@@ -81,7 +81,7 @@ class NewNumber:
     def __mul__(self, number):
         x, dx = self._parse_number(number)
         new_x = self.x * x
-        new_dx = np.sqrt( x*self.dx + self.x*dx )
+        new_dx = np.sqrt( pow(x*self.dx,2) + pow(self.x*dx,2) )
         return NewNumber(new_x, new_dx)
 
 

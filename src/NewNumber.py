@@ -10,9 +10,13 @@ class NewNumber:
     """
 
     def __init__(self, x, dx = 0.0):
-        self.x = float(x)
-        self.dx = float(dx)
         self.prec = None
+        if isinstance(x, (tuple, list)) and len(x) == 2:
+            self.x = x[0]
+            self.dx = x[1]
+        else:
+            self.x = float(x)
+            self.dx = float(dx)
 
     def _autogenerate_precision(self):
         if self.prec:

@@ -1,70 +1,132 @@
+import numpy as np
+
+def jupyter_html_print(string):
+    get_ipython().run_cell_magic(u'HTML', u'', string)
+
 class DataTable:
     """
-    Fill this class with arrays where each array is a row of the table
-    the content of the array will be parsed to str
-    Afterwards print it as latex or html
-    Initialise the class with a header (an array) or the number of columns
-     >>>>> In construction
+    This class takes as input and stores a table in the form of an array of arrays 
+    with the following structure:
+    self.data_raw[row][column]
     """
-    def __init__(self, ncols = None, header = None, horizontal_sep = "", vertical_sep = ""):
-        if header:
-            try:
-                self.ncols = len(header)
-                self.rows = [header]
-            except:
-                print("TODO: catch when header does not implement len...")
+
+    # Initialiser functions
+    def __init__(self, ncols = None, header = None, data = None):
+        self.header = None
+        self.data_raw = []
+        if not ncols and not header and not data:
+            raise Exception("Need either ncols, header or data to initialise")
+        if data:
+            self._init_from_data(data, header = header)
+        elif header:
+            self._init_from_header(header)
+        if ncols and (header or data):
+            if ncols != self.ncols:
+                raise Exception("Number of columns and header provided are not compatible")
         elif ncols:
             self.ncols = ncols
-            self.rows = []
+
+    def _init_from_data(self, data, header = None):
+        if header:
+            self.header = header
+            data_raw = data
         else:
-            raise Exception("This class needs either the header of the table or the number of columns")
-        self.h_sep = horizontal_sep
-        self.v_sep = vertical_sep
-        
+            self.header = data[0]
+            self.data_raw = data[1:]
+
+    def _init_from_header(self, header):
+        if isinstance(header, (tuple, list, np.array)):
+            self.ncols = len(header)
+            self.header = header
+        elif isinstance(header, (str)):
+            header_sp = header.split('&')
+            self.header = header_sp
+            self.ncols = len(header_sp)
+        else:
+            raise Exception("DataTable doesn't implement type {0} yet".format(type(header)))
+
+    # Add extra content 
     def add_row(self, fields_raw, row_header = None):
+        """
+        Add an extra row to the DataTable
+        Exposes row_header, being the first column of the row, to be filled separately
+        """
         if row_header:
             fields = [row_header]
         else:
             fields = []
         for field in fields_raw:
-            fields.append(str(field))
+            fields.append(field)
         if len(fields) != self.ncols:
             raise Exception("The number of fields provided do not match the current table size")
-        self.rows.append(fields)
+        self.data_raw.append(fields)
 
-    def str_latex(self, align = "c"):
-        if "-" in self.h_sep or "_" in self.h_sep:
+    # Printing functions
+    def _str_row(self, row):
+        """ Parse the content to a row
+        to a row of str()
+        """
+        return [str(i) for i in row]
+
+    def str_latex(self, align = "c", v_sep = "", h_sep = "", environment = "tabular"):
+        """
+        Print table as a latex tabular (by default) environment
+        """
+        # Preprocess the table
+        if "-" in h_sep or "_" in h_sep:
             latex_sep = "    \\\\ \hline\n"
         else:
-            latex_sep = "     \\\\ {0}\n".format(self.h_sep)  
+            latex_sep = "     \\\\ {0}\n".format(h_sep)  
         positioning_sp = " {0} ".format(align)
-        columns = "{" + self.v_sep + self.v_sep.join( self.ncols*[positioning_sp] ) + self.v_sep + "}"
-        lines = ["\\begin{tabular}" + columns]
-        for row in self.rows:
-            new_str = " & ".join(row)
-            lines.append(new_str)
-        lines.append("\end{tabular}")
+        # Header always have a separator
+        if self.header and h_sep == "":
+            header_sep = "    \\\\ \hline\n"
+        else:
+            header_sep = latex_sep
+        amp = " & "
+
+        # Generate the column structure and the first few lines
+        columns = "{" + v_sep + v_sep.join( self.ncols*[positioning_sp] ) + v_sep + "}"
+        latex_begin = "\\begin{{0}}{1}".format(environment, columns)
+        latex_end = "\end{{0}}".format(environment)
+
+        # Generate a list of strings
+        lines = [latex_begin]
+        if self.header:
+            lines.append( "\hline " + amp.join(self._str_row(self.header)) + header_sep )
+        for row in self.data_raw:
+            lines.append( amp.join(self._str_row(row)) )
+        lines.append(latex_end)
         return latex_sep.join(lines)
-        
+
     def str_html(self, align = "center"):
-        # Create the style
-        style_table = "border-collapse: separate; border-spacing: 1px; width:95%; margin-left:auto; margin-right:auto;"     
+        # Create the CSS style
+        table_style = "border-collapse: separate; border-spacing: 1px; width:95%; margin-left:auto; margin-right:auto;"
         cell_style = "text-align: {0};".format(align)
 
+        # Define the html commands
+        table_start = '<table style="{0}">'.format(table_style)
+        table_end = "</table>"
+
         cell_start = '<td style="{0}">'.format(cell_style)
-        cell_separator = "</td>" + cell_start
+        cell_end = "</td>"
+        cell_separator = cell_end + "\n\t\t" + cell_start # </td><td>
+
+        row_start = "\t<tr>\n\t\t" + cell_start
+        row_end = cell_end + "\n\t</tr>"
 
         # Build the table
-        lines = ['<table style="{0}">'.format(style_table)]
-        for row in self.rows:
-            lines.append("    <tr>")
-            new_str = "        " + cell_start
-            new_str += cell_separator.join(row)
-            new_str += "</td>"
+        lines = [table_start]
+        for row in self.data_raw:
+            new_str = row_start 
+            new_str += cell_separator.join(self._str_row(row))
+            new_str += row_end
             lines.append(new_str)
-            lines.append("    </tr>")
-        lines.append("</table>")
+        lines.append(table_end)
         return "\n".join(lines)
-    
-    def jupyter_print(self):
-        get_ipython().run_cell_magic(u'HTML', u'', self.str_html())
+
+
+    # Wrappers
+    def jupyter_print(self, mode = 'html'):
+        if mode == 'html':
+            jupyter_html_print(self.str_html())

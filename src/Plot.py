@@ -243,7 +243,10 @@ class Plot:
             # Step 1, check that the x axis is the same in both plots
             if not np.array_equal(self.x, plot.x):
                 raise Exception("You are trying to take the ratio of two plots with different x axis")
-            x_data = [self.x, self.xmin, self.xmax]
+            x_data = [self.x [plot.y != 0.0],
+                    self.xmin [plot.y != 0.0],
+                    self.xmax [plot.y != 0.0]
+                    ]
             # Take ratio of central values
             min_y = [i/j for i,j in zip(self.ymin, plot.y) if j != 0.0]
             max_y = [i/j for i,j in zip(self.ymax, plot.y) if j != 0.0]

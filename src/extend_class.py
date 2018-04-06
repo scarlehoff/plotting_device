@@ -5,6 +5,8 @@ def update_limits(axis, plot, padding = 0.05):
         Update the limits on the axis of the plot (with a padding from the top of 'padding')
         It looks at the previous limits and enlarge them but never shrinks them
     """
+    if axis.keep_limits:
+        return
     try:
         if axis.gnu_extended_object == "new":
             axis.gnu_extended_object = "old"
@@ -103,5 +105,6 @@ def extend_all(plt):
     plt.gnu_histeps  = MethodType(gnu_histeps , plt)
     plt.update_limits = MethodType(update_limits, plt)
     plt.draw_labels   = MethodType(draw_labels  , plt)
+    plt.keep_limits = False
     plt.gnu_extended_object = "new"
     return plt

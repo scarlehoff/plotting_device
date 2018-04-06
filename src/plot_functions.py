@@ -43,7 +43,7 @@ def draw_canvas(plt, nrows = 2, ncols = 1, gridspec_kw = None, sharex = True):
         axis = ec.extend_all(axis)
         return fig, [axis]
 
-def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), tick_step = 0.2, format_tick = "%.0f"):
+def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), tick_step = 0.2, format_tick = "%.0f", keep_limits = False):
     """
     Create a figure for a plot-ratio 
     ratio: ratio between proper plot and ratio_plot (default, plot 1.5 times bigger than ratio, [1.5,1])
@@ -52,7 +52,7 @@ def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), tick_st
     format_tick: default format tick for plot (default %.0f)
     """
     from matplotlib.ticker import FormatStrFormatter
-    gridspec_kw = { 'height_ratios' : [1.5, 1], 'hspace' : 0,
+    gridspec_kw = { 'height_ratios' : ratio, 'hspace' : 0,
             'left' : 0.0, 'right' : 2.0, 'bottom' : 0.0, 'top' : 1.0 }
     fig, axis = draw_canvas(plt, 2, 1, gridspec_kw = gridspec_kw)
 
@@ -64,10 +64,12 @@ def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), tick_st
 
     axis[0].yaxis.set_major_formatter(FormatStrFormatter(format_tick))
 
+    axis[1].keep_limits = keep_limits
     axis[1].set_ylim(ratio_range)
     axis[1].set_yticks(yticks)
     axis[1].set_yticklabels(ylabels)
     axis[1].axhline(y=1, color="black", lw = 1.0)
+
     
     return fig, axis
     

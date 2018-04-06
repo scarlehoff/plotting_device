@@ -1,4 +1,5 @@
 import numpy as np
+import decimal as dec
 
 class NewNumber:
 
@@ -27,10 +28,44 @@ class NewNumber:
             self.set_precision(0)
         else:
             self.set_precision(-precision)
+
+    def ceil(self, decimals = 0):
+        if decimals == 0:
+            new_x = np.ceil(self.x)
+            new_dx = np.ceil(self.dx)
+        else:
+            f_x = dec.Decimal(self.x)
+            f_dx = dec.Decimal(self.dx)
+            base_n = str(pow(10,-decimals))
+            f_n = dec.Decimal(base_n)
             
-        
+            new_x = f_x.quantize(f_n, rounding=dec.ROUND_UP)
+            new_dx = f_dx.quantize(f_n, rounding=dec.ROUND_UP)
+
+        return NewNumber(new_x, new_dx)
+
+    def floor(self, decimals = 0):
+        if decimals == 0:
+            new_x = np.floor(self.x)
+            new_dx = np.floor(self.dx)
+        else:
+            f_x = dec.Decimal(self.x)
+            f_dx = dec.Decimal(self.dx)
+            base_n = str(pow(10,-decimals))
+            f_n = dec.Decimal(base_n)
+            
+            new_x = f_x.quantize(f_n, rounding=dec.ROUND_DOWN)
+            new_dx = f_dx.quantize(f_n, rounding=dec.ROUND_DOWN)
+
+        return NewNumber(new_x, new_dx)
+
+    def round(self, decimals = 0):
+        new_x = np.round(self.x, decimals = decimals)
+        new_dx = np.round(self.dx, decimals = decimals)
+        return NewNumber(new_x, new_dx)
+
     def set_precision(self, precision):
-        """  How many decimal places to print
+        """  How many decimal places to print or round to
         """
         self.prec = precision
 
@@ -68,6 +103,20 @@ class NewNumber:
         new_dx = np.sqrt(pow(self.dx, 2) + pow(dx, 2))
         return NewNumber(new_x, new_dx)
 
+    # Intrinsic override
+    def __ceil__(self):
+        if self.prec:
+            return self.ceil(self.prec)
+        else:
+            return self.ceil()
+
+    def __floor__(self):
+        if self.prec:
+            return self.floor(self.prec)
+        else:
+            return self.floor()
+
+    # Operations override
 
     def __add__(self, number):
         return self._sum_n(number, factor = 1.0)

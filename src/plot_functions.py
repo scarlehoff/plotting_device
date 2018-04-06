@@ -56,11 +56,12 @@ def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), tick_st
             'left' : 0.0, 'right' : 2.0, 'bottom' : 0.0, 'top' : 1.0 }
     fig, axis = draw_canvas(plt, 2, 1, gridspec_kw = gridspec_kw)
 
-    yticks = np.arange(ratio_range[0], ratio_range[1]*1.05, tick_step)
-    ylabels = [np.around(i,decimals=1) for i in yticks[:-1]]
+    yticks = np.arange(ratio_range[0], ratio_range[1]*1.05, tick_step)[:-1]
+    ylabels = [np.around(i,decimals=1) for i in yticks[:]]
 
-    yticks = np.append(yticks[:-1], 1.0)
-    ylabels.append(1)
+    if 1.0 not in yticks:
+        yticks = np.append(yticks[:-1], 1.0)
+        ylabels.append(1)
 
     axis[0].yaxis.set_major_formatter(FormatStrFormatter(format_tick))
 

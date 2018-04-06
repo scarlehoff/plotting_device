@@ -1,4 +1,6 @@
 # Methods that extend matplotlib
+from NewNumber import NewNumber
+import numpy as np
 
 def update_limits(axis, plot, padding = 0.05):
     """
@@ -98,6 +100,53 @@ def gnu_errorbar(axis, plot, padding = 0.05, draw_labels = True, show_legend = T
 
     axis.grid(linestyle = '--')
 
+def relimit(axis, n_ticks = 5, line_one = False, padding = 1.05):
+    """ 
+    Try to figure the y limits by yourself.
+    Yes you can!
+    """
+    ymin_l = []
+    ymax_l = []
+    for line in axis.lines:
+        ydata = line.get_ydata()
+        ymin_l.append(min(ydata))
+        ymax_l.append(max(ydata))
+
+    ymin = min(ymin_l)
+    ymax = max(ymax_l)
+    pow10_raw = np.log10(ymax - ymin)
+    if pow10_raw > 0:
+        pow10 = np.round(pow10_raw)
+    else:
+        pow10 = np.floor(pow10_raw)
+
+    rounder = pow(10, pow10)
+    ymax = NewNumber(ymax).floor(decimals = -pow10) + rounder
+    ymin = NewNumber(ymin).ceil(decimals = -pow10) - rounder
+
+    t_step = (ymax-ymin)/(n_ticks + 1.0)
+    t_step = t_step.ceil(decimals = -pow10)
+
+    yticks = np.arange(ymin.x, ymax.x, t_step.x)
+    ylabels = [np.around(i,decimals=1) for i in yticks]
+
+    if line_one:
+        axis.axhline(y=1, color="black", lw = 1.0)
+
+        if 1.0 not in yticks:
+            yticks = np.append(yticks[:-1], 1.0)
+            ylabels.append(1)
+
+    axis.set_ylim( (ymin.x, ymax.x*padding) )
+    axis.set_yticklabels(ylabels)
+    axis.set_yticks(yticks)
+
+
+
+
+    
+
+
 def extend_all(plt):
     from types import MethodType
     plt.draw_boxxyerrorbar = MethodType(draw_boxxyerrorbar, plt)
@@ -105,6 +154,7 @@ def extend_all(plt):
     plt.gnu_histeps  = MethodType(gnu_histeps , plt)
     plt.update_limits = MethodType(update_limits, plt)
     plt.draw_labels   = MethodType(draw_labels  , plt)
+    plt.relimit = MethodType(relimit, plt)
     plt.keep_limits = False
     plt.gnu_extended_object = "new"
     return plt

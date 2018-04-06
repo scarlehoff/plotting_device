@@ -245,11 +245,13 @@ class Plot:
                 raise Exception("You are trying to take the ratio of two plots with different x axis")
             x_data = [self.x, self.xmin, self.xmax]
             # Take ratio of central values
-            min_y = [i/j for i,j in zip(self.ymin, plot.y)]
-            max_y = [i/j for i,j in zip(self.ymax, plot.y)]
+            min_y = [i/j for i,j in zip(self.ymin, plot.y) if j != 0.0]
+            max_y = [i/j for i,j in zip(self.ymax, plot.y) if j != 0.0]
             central_y = []
             central_dy = []
             for i,j, di,dj in zip(self.y, plot.y, self.stat_err, plot.stat_err):
+                if j == 0.0:
+                    continue
                 ydy = NewNumber(i,di) / NewNumber(j, dj)
                 central_y.append(ydy.x)
                 central_dy.append(ydy.dx)

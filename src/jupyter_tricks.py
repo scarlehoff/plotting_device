@@ -117,6 +117,11 @@ class DataTable:
 
         # Build the table
         lines = [table_start]
+        # Write header if it exists
+        if self.header:
+            bold_header = ["<strong>{0}</strong>".format(i) for i in self.header]
+            new_str = row_start + cell_separator.join(bold_header) + row_end
+            lines.append(new_str)
         for row in self.data_raw:
             new_str = row_start 
             new_str += cell_separator.join(self._str_row(row))

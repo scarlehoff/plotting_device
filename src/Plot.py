@@ -133,7 +133,7 @@ class Plot:
         """
         Ensures xmin/xmax actually make sense
         """
-        if self.x.shape == ():
+        if self.x.shape == () or len(self.x) == 1:
             # We are dealing with a scalar
             self.xmin = self.x
             self.xmax = self.x

@@ -10,8 +10,8 @@ class NewNumber:
         for correct error propagation
     """
 
-    def __init__(self, x, dx = 0.0):
-        self.prec = None
+    def __init__(self, x, dx = 0.0, prec = None):
+        self.prec = prec
         if isinstance(x, (tuple, list)) and len(x) == 2:
             self.x = x[0]
             self.dx = x[1]
@@ -23,11 +23,20 @@ class NewNumber:
         if self.prec:
             # Precision has been set from outside
             return 
-        precision = int(np.log10(self.dx)) - 1
+        precision = np.floor(np.log10(self.dx))
         if precision > 0:
+            # Use the full number for self.dx > 1.0
             self.set_precision(0)
         else:
-            self.set_precision(-precision)
+            self.set_precision(-int(precision))
+
+    def power_of_10(self):
+        """
+            Returns the power of 10 corresponding to 
+            scientific notation for self.x
+        """
+        pow10 = np.floor(np.log10(self.x))
+        return int(pow10)
 
     def ceil(self, decimals = 0):
         if decimals == 0:
@@ -69,14 +78,6 @@ class NewNumber:
         """
         self.prec = precision
 
-    def __str__(self):
-        if (self.dx == 0.0):
-            return str(self.x)
-        else:
-            self._autogenerate_precision()
-            base_string = "{0:.{prec}f} +/- {1:.{prec}f}"
-            return base_string.format(self.x, self.dx, prec = self.prec)
-
     def _parse_number(self, number):
         """ 
         Checks type of number and returns 
@@ -103,7 +104,15 @@ class NewNumber:
         new_dx = np.sqrt(pow(self.dx, 2) + pow(dx, 2))
         return NewNumber(new_x, new_dx)
 
-    # Intrinsic override
+    ####### Intrinsic overrides
+    def __str__(self):
+        if (self.dx == 0.0):
+            return str(self.x)
+        else:
+            self._autogenerate_precision()
+            base_string = "{0:.{prec}f} +/- {1:.{prec}f}"
+            return base_string.format(self.x, self.dx, prec = self.prec)
+
     def __ceil__(self):
         if self.prec:
             return self.ceil(self.prec)
@@ -136,11 +145,4 @@ class NewNumber:
         new_x = self.x * x
         new_dx = np.sqrt( pow(x*self.dx,2) + pow(self.x*dx,2) )
         return NewNumber(new_x, new_dx)
-
-
-
-
-
-        
-
 

@@ -107,8 +107,11 @@ def relimit(axis, n_ticks = 5, line_one = False, padding = 1.05, enforce_lims = 
     separation between ticks
     """
     if enforce_lims:
-        ymin = enforce_lims[0]
-        ymax = enforce_lims[1]
+        ymin = NewNumber(enforce_lims[0])
+        ymax = NewNumber(enforce_lims[1])
+
+        pow10 = (ymax-ymin).power_of_10()
+
     else:
         ymin_l = []
         ymax_l = []
@@ -120,15 +123,11 @@ def relimit(axis, n_ticks = 5, line_one = False, padding = 1.05, enforce_lims = 
         ymin = min(ymin_l)
         ymax = max(ymax_l)
 
-    pow10_raw = np.log10(ymax - ymin)
-    if pow10_raw > 0:
-        pow10 = np.round(pow10_raw)
-    else:
-        pow10 = np.floor(pow10_raw)
+        pow10 = NewNumber(ymax-ymin).power_of_10()
 
-    rounder = pow(10, pow10)
-    ymax = NewNumber(ymax).floor(decimals = -pow10) + rounder
-    ymin = NewNumber(ymin).ceil(decimals = -pow10) - rounder
+        rounder = pow(10, pow10)
+        ymax = NewNumber(ymax).floor(decimals = -pow10) + rounder
+        ymin = NewNumber(ymin).ceil(decimals = -pow10) - rounder
 
     t_step = (ymax-ymin)/(n_ticks + 1.0)
     t_step = t_step.ceil(decimals = -pow10)
@@ -140,7 +139,7 @@ def relimit(axis, n_ticks = 5, line_one = False, padding = 1.05, enforce_lims = 
         axis.axhline(y=1, color="black", lw = 1.0)
 
         if 1.0 not in yticks:
-            yticks = np.append(yticks[:-1], 1.0)
+            yticks = np.append(yticks, 1.0)
             ylabels.append(1)
 
     axis.set_ylim( (ymin.x, ymax.x*padding) )

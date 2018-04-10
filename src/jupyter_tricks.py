@@ -1,4 +1,5 @@
 import numpy as np
+import collections
 
 def jupyter_html_print(string):
     get_ipython().run_cell_magic(u'HTML', u'', string)
@@ -55,8 +56,13 @@ class DataTable:
             fields = [row_header]
         else:
             fields = []
-        for field in fields_raw:
-            fields.append(field)
+
+        if isinstance(fields_raw, str) or not isinstance(fields_raw, collections.Iterable):
+            fields.append(fields_raw)
+        else:
+            for field in fields_raw:
+                fields.append(field)
+
         if len(fields) != self.ncols:
             raise Exception("The number of fields provided do not match the current table size")
         self.data_raw.append(fields)

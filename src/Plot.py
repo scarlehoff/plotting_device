@@ -99,8 +99,8 @@ class Plot:
         columns_x = list(columns_x)
         columns_y = list(columns_y)
         last_col = max(columns_x + columns_y)
-        data = np.loadtxt(filename, comments=comments, usecols=range(last_col + 1), unpack=True)
-
+        data = np.loadtxt(filename, comments=comments, usecols=range(last_col + 1), unpack=True, ndmin = 2)
+    
         self.x, self.xmin, self.xmax = self._create_envelope(data[columns_x])
         self.y, self.ymin, self.ymax = self._create_envelope(data[columns_y])
 

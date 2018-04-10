@@ -148,6 +148,9 @@ class Plot:
     # Output functions
 
     def get_integral(self, xmin = None, xmax = None):
+        if len(self.x) == 1:
+            return self.y[0], self.stat_err[0]
+
         if not xmin:
             xmin = self.xmin[0]
         if not xmax:

@@ -100,20 +100,26 @@ def gnu_errorbar(axis, plot, padding = 0.05, draw_labels = True, show_legend = T
 
     axis.grid(linestyle = '--')
 
-def relimit(axis, n_ticks = 5, line_one = False, padding = 1.05):
+def relimit(axis, n_ticks = 5, line_one = False, padding = 1.05, enforce_lims = None):
     """ 
-    Try to figure the y limits by yourself.
-    Yes you can!
+    Tries to figure out ylimits by itself.
+    It will also print a line across one if needed and will try to figure out the correct
+    separation between ticks
     """
-    ymin_l = []
-    ymax_l = []
-    for line in axis.lines:
-        ydata = line.get_ydata()
-        ymin_l.append(min(ydata))
-        ymax_l.append(max(ydata))
+    if enforce_lims:
+        ymin = enforce_lims[0]
+        ymax = enforce_lims[1]
+    else:
+        ymin_l = []
+        ymax_l = []
+        for line in axis.lines:
+            ydata = line.get_ydata()
+            ymin_l.append(min(ydata))
+            ymax_l.append(max(ydata))
 
-    ymin = min(ymin_l)
-    ymax = max(ymax_l)
+        ymin = min(ymin_l)
+        ymax = max(ymax_l)
+
     pow10_raw = np.log10(ymax - ymin)
     if pow10_raw > 0:
         pow10 = np.round(pow10_raw)

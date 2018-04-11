@@ -19,23 +19,56 @@ class NewNumber:
             self.x = float(x)
             self.dx = float(dx)
 
+    def _retrieve_first_digit(self, nonzero = False):
+        """
+        Retrieves first digit of the number and the stat error on the number
+        if nonzero = True, returns the first number which is non 0
+        """
+        str_x = str(self.x).replace(".", "").replace("-","")
+        str_dx = str(self.dx).replace(".", "").replace("-","")
+        
+        if nonzero:
+            if self.x != 0.0:
+                str_x = str_x.replace("0", "")
+            if self.dx != 0.0:
+                str_dx = str_dx.replace("0", "")
+
+        f_x = int(str_x[0])
+        f_dx = int(str_dx[0])
+
+        return f_x, f_x
+        
     def _autogenerate_precision(self):
         if self.prec:
             # Precision has been set from outside
             return 
         precision = np.floor(np.log10(self.dx))
+
+        # If the error's first number is 1, get an extra digit!
+        _, first_digit = self._retrieve_first_digit(nonzero = True)
+        if first_digit == 1:
+            precision -= 1
+
         if precision > 0:
             # Use the full number for self.dx > 1.0
             self.set_precision(0)
         else:
             self.set_precision(-int(precision))
 
-    def power_of_10(self):
+    def power_of_10(self, partition = 1):
         """
             Returns the power of 10 corresponding to 
             scientific notation for self.x
+            Partition decides from which number onwards
+            we count a new power of 10
+            By default: 1 
+            (ie, if partition = 2: 152 = 15.2 * 10)
         """
         pow10 = np.floor(np.log10(self.x))
+        f, _ = self._retrieve_first_digit(nonzero = True)
+        if f < partition:
+            pow10 -= 1
+
         return int(pow10)
 
     def ceil(self, decimals = 0):
@@ -124,6 +157,12 @@ class NewNumber:
             return self.floor(self.prec)
         else:
             return self.floor()
+
+    def __float__(self):
+        return float(self.x)
+
+    def __int__(self):
+        return int(self.x)
 
     # Operations override
 

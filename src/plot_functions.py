@@ -43,12 +43,12 @@ def draw_canvas(plt, nrows = 2, ncols = 1, gridspec_kw = None, sharex = True):
         axis = ec.extend_all(axis)
         return fig, [axis]
 
-def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), tick_step = 0.2, format_tick = "%.0f", keep_limits = False):
+def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), n_ticks = 4, format_tick = "%.0f", keep_limits = False):
     """
     Create a figure for a plot-ratio 
     ratio: ratio between proper plot and ratio_plot (default, plot 1.5 times bigger than ratio, [1.5,1])
     ratio_range: yrange for ratio plot (default 0.5 to 1.5)
-    tick_step: default tick step for ratio plot (default 0.2)
+    n_ticks: how many ticks to print
     format_tick: default format tick for plot (default %.0f)
     """
     from matplotlib.ticker import FormatStrFormatter
@@ -56,22 +56,12 @@ def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), tick_st
             'left' : 0.0, 'right' : 2.0, 'bottom' : 0.0, 'top' : 1.0 }
     fig, axis = draw_canvas(plt, 2, 1, gridspec_kw = gridspec_kw)
 
-    yticks = np.arange(ratio_range[0], ratio_range[1]*1.05, tick_step)[:-1]
-    ylabels = [np.around(i,decimals=1) for i in yticks[:]]
-
-    if 1.0 not in yticks:
-        yticks = np.append(yticks[:-1], 1.0)
-        ylabels.append(1)
-
     axis[0].yaxis.set_major_formatter(FormatStrFormatter(format_tick))
 
-    axis[1].keep_limits = keep_limits
-    axis[1].set_ylim(ratio_range)
-    axis[1].set_yticks(yticks)
-    axis[1].set_yticklabels(ylabels)
-    axis[1].axhline(y=1, color="black", lw = 1.0)
+    # Generate the first set of limits for the ratio plot with the axis.relimit function from extend_class
+    axis[1].keep_limits = False
+    axis[1].relimit(n_ticks = n_ticks, line_one = True, padding = 1.05, enforce_lims = ratio_range)
 
-    
     return fig, axis
     
 

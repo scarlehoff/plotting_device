@@ -100,7 +100,7 @@ def gnu_errorbar(axis, plot, padding = 0.05, draw_labels = True, show_legend = T
 
     axis.grid(linestyle = '--')
 
-def relimit(axis, n_ticks = 5, line_one = False, padding = 1.05, enforce_lims = None):
+def relimit(axis, n_ticks = 4, line_one = False, padding = 1.05, enforce_lims = None):
     """ 
     Tries to figure out ylimits by itself.
     It will also print a line across one if needed and will try to figure out the correct
@@ -110,7 +110,7 @@ def relimit(axis, n_ticks = 5, line_one = False, padding = 1.05, enforce_lims = 
         ymin = NewNumber(enforce_lims[0])
         ymax = NewNumber(enforce_lims[1])
 
-        pow10 = (ymax-ymin).power_of_10()
+        pow10 = (ymax-ymin).power_of_10(partition = 3)
 
     else:
         ymin_l = []
@@ -123,17 +123,18 @@ def relimit(axis, n_ticks = 5, line_one = False, padding = 1.05, enforce_lims = 
         ymin = min(ymin_l)
         ymax = max(ymax_l)
 
-        pow10 = NewNumber(ymax-ymin).power_of_10()
+        pow10 = NewNumber(ymax-ymin).power_of_10(partition = 3)
 
         rounder = pow(10, pow10)
         ymax = NewNumber(ymax).floor(decimals = -pow10) + rounder
         ymin = NewNumber(ymin).ceil(decimals = -pow10) - rounder
 
-    t_step = (ymax-ymin)/(n_ticks + 1.0)
+    deltay = ymax - ymin
+    t_step = deltay / (n_ticks + 1.0)
     t_step = t_step.ceil(decimals = -pow10)
 
     yticks = np.arange(ymin.x, ymax.x, t_step.x)
-    ylabels = [np.around(i,decimals=1) for i in yticks]
+    ylabels = [np.around(i,decimals=-pow10) for i in yticks]
 
     if line_one:
         axis.axhline(y=1, color="black", lw = 1.0)
@@ -142,7 +143,9 @@ def relimit(axis, n_ticks = 5, line_one = False, padding = 1.05, enforce_lims = 
             yticks = np.append(yticks, 1.0)
             ylabels.append(1)
 
-    axis.set_ylim( (ymin.x, ymax.x*padding) )
+    d_padding = float(t_step/4.0*padding)
+
+    axis.set_ylim( (ymin.x, ymax.x + d_padding) )
     axis.set_yticklabels(ylabels)
     axis.set_yticks(yticks)
 

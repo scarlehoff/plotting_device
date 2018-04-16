@@ -51,7 +51,10 @@ def draw_boxxyerrorbar(axis, plot, alpha=0.25):
     pc = PatchCollection(r, facecolor=plot.color, 
                          edgecolor='None', alpha=alpha)
     if not plot.color: # maybe the plot did not contain a color, let's give it some color!
-        color = pc[0].get_color()
+        if isinstance(pc, (tuple, list)):
+            color = pc[0].get_facecolor()
+        else:
+            color = pc.get_facecolor()
         # Update the plot color
         plot.set_plot_parameters(color = color)
     axis.add_collection(pc)

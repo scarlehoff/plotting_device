@@ -159,9 +159,9 @@ class Plot:
             xm = xmp[0]
             xp = xmp[1]
             if (xm >= xmin) & (xp <= xmax):
-                total_y[0] += self.y[i]
-                total_y[1] += self.ymax[i]
-                total_y[2] += self.ymin[i]
+                total_y[0] += self.y[i]*(xp-xm)
+                total_y[1] += self.ymax[i]*(xp-xm)
+                total_y[2] += self.ymin[i]*(xp-xm)
                 total_dy_sum += pow(self.stat_err[i],2)
         total_y.append(np.sqrt(total_dy_sum))
 

@@ -143,28 +143,39 @@ class Plot:
             self.xmin = np.array([i-delta/2.0 for i in self.x])
             self.xmax = np.array([i+delta/2.0 for i in self.x])
 
-
-
-    # Output functions
-
-    def get_integral(self, xmin = None, xmax = None):
+    def _compute_integral(self, xmin = None, xmax = None):
         if len(self.x) == 1:
-            return self.y[0], self.stat_err[0]
-
+            return self.y[0], self.ymax[0], self.ymin[0],  self.stat_err[0]
         if not xmin:
             xmin = self.xmin[0]
         if not xmax:
             xmax = self.xmax[-1]
 
-        total_y = 0
+        # [central y, ymax, ymin]
+        total_y = [0, 0, 0]
         total_dy_sum = 0
-        for xm,xp,y,dy in zip(self.xmin, self.xmax, self.y, self.stat_err):
-            if (xm >= xmin) & (xp <= xmax):
-                total_y += y*(xp-xm)
-                total_dy_sum += dy*dy
-        total_dy = np.sqrt(total_dy_sum)
-        return total_y, total_dy
 
+        for i, xmp in enumerate(zip(self.xmin, self.xmax)):
+            xm = xmp[0]
+            xp = xmp[1]
+            if (xm >= xmin) & (xp <= xmax):
+                total_y[0] += self.y[i]
+                total_y[1] += self.ymax[i]
+                total_y[2] += self.ymin[i]
+                total_dy_sum += pow(self.stat_err[i],2)
+        total_y.append(np.sqrt(total_dy_sum))
+
+        return tuple(total_y)
+
+    # Output functions
+
+    def get_integral_envelope(self, xmin = None, xmax = None):
+        return self._compute_integral(xmin, xmax)
+
+
+    def get_integral(self, xmin = None, xmax = None):
+        y, _, _, dy = self._compute_integral(xmin, xmax)
+        return y, dy
 
     def get_total(self, xmin = None, xmax = None):
         if not xmin:

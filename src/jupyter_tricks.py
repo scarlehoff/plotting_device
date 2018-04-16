@@ -68,16 +68,23 @@ class DataTable:
         self.data_raw.append(fields)
 
     # Printing functions
-    def _str_row(self, row):
+    def _str_row(self, row, escape = None):
         """ Parse the content to a row
         to a row of str()
         """
-        return [str(i) for i in row]
+        out_row = []
+        for item in row:
+            new_st = str(item)
+            if escape == "latex":
+                new_st = new_st.replace("%", "\\%")
+            out_row.append(new_st)
+        return out_row
 
     def str_latex(self, align = "c", v_sep = "", h_sep = "", environment = "tabular"):
         """
         Print table as a latex tabular (by default) environment
         """
+        environment_c = "{" + environment + "}"
         # Preprocess the table
         if "-" in h_sep or "_" in h_sep:
             latex_sep = "    \\\\ \hline\n"
@@ -93,17 +100,21 @@ class DataTable:
 
         # Generate the column structure and the first few lines
         columns = "{" + v_sep + v_sep.join( self.ncols*[positioning_sp] ) + v_sep + "}"
-        latex_begin = "\\begin{{0}}{1}".format(environment, columns)
-        latex_end = "\end{{0}}".format(environment)
+        latex_begin = "\\begin{0}{1}".format(environment_c, columns) + "\n"
+        latex_end = "\end{0}".format(environment_c)
 
         # Generate a list of strings
-        lines = [latex_begin]
+        latex_out = latex_begin 
         if self.header:
-            lines.append( "\hline " + amp.join(self._str_row(self.header)) + header_sep )
+            latex_out += "\hline " + amp.join(self._str_row(self.header, escape = "latex")) + header_sep
+
+        lines = []
         for row in self.data_raw:
-            lines.append( amp.join(self._str_row(row)) )
+            lines.append( amp.join(self._str_row(row, escape = "latex")) )
         lines.append(latex_end)
-        return latex_sep.join(lines)
+
+        latex_out += latex_sep.join(lines)
+        return latex_out
 
     def str_html(self, align = "center"):
         # Create the CSS style

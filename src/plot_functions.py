@@ -6,19 +6,27 @@ def default_plt():
 
     font_family = 'sans-serif'
     font = 'Iosevka'
-    text_weight = 20
-    label_size = 22
+    text_weight = 'medium'
+    label_size = 19
     capsize = 4
 
     plt.rcParams['font.family'] = font_family
-    #plt.rcParams['font.sans-serif'] = font
-    plt.rcParams['font.serif'] = font
+    plt.rcParams['font.sans-serif'] = font
     plt.rcParams['font.weight'] = text_weight
-    plt.rcParams['axes.labelsize'] = label_size
     plt.rcParams['xtick.labelsize'] = label_size
     plt.rcParams['ytick.labelsize'] = label_size
     plt.rcParams['errorbar.capsize'] = capsize
-    plt.rcParams['text.usetex'] = True
+
+    # Legend
+    plt.rcParams['legend.fontsize'] = label_size-5
+    plt.rcParams['legend.frameon'] = False
+
+    # Axes
+    plt.rcParams['axes.linewidth'] = 1.5
+    plt.rcParams['axes.labelsize'] = label_size
+    plt.rcParams['axes.titlesize'] = label_size 
+
+#     plt.rcParams['text.usetex'] = False
 
     return plt
 
@@ -65,4 +73,6 @@ def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), n_ticks
     return fig, axis
     
 
+def save_to_file(fig, filename):
+    fig.savefig(filename, bbox_inches = 'tight')
 

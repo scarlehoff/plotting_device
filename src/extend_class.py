@@ -42,7 +42,7 @@ def boxxyerrorbar(xmin, xmax, ymin, ymax):
             yp-ym, # height
         ))
     return r
-def draw_boxxyerrorbar(axis, plot, alpha=0.25):
+def draw_boxxyerrorbar(axis, plot, alpha=0.25, draw_labels = False):
     """
     Gnuplot-like errorbars
     """
@@ -57,6 +57,8 @@ def draw_boxxyerrorbar(axis, plot, alpha=0.25):
             color = pc.get_facecolor()
         # Update the plot color
         plot.set_plot_parameters(color = color)
+    if draw_labels:
+        axis.draw_labels(plot)
     axis.add_collection(pc)
 
 def gnu_histeps(axis, plot, show_legend = False, draw_labels = True):
@@ -151,11 +153,6 @@ def relimit(axis, n_ticks = 4, line_one = False, padding = 1.05, enforce_lims = 
     axis.set_ylim( (ymin.x, ymax.x + d_padding) )
     axis.set_yticklabels(ylabels)
     axis.set_yticks(yticks)
-
-
-
-
-    
 
 
 def extend_all(plt):

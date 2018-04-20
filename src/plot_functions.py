@@ -26,6 +26,11 @@ def default_plt():
     plt.rcParams['axes.labelsize'] = label_size
     plt.rcParams['axes.titlesize'] = label_size 
 
+    # Ticks
+    plt.rcParams['xtick.direction'] = "in"
+    plt.rcParams['ytick.direction'] = "in"
+
+
 #     plt.rcParams['text.usetex'] = False
 
     return plt

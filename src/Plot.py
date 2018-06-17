@@ -36,11 +36,13 @@ class Plot:
 
     # Setters
 
-    def set_label_parameters(self, xlabel = None, ylabel = None, legend = None):
+    def set_label_parameters(self, xlabel = None, ylabel = None, legend = None, title = None):
         if xlabel: self.xlabel = xlabel
         if ylabel: 
             self.ylabel = ylabel
         if legend: self.legend = legend
+        if title:
+            self.title = title
 
     def set_plot_parameters(self, color = 'blue', marker = '.', line = '', fmt = None):
         self.color = color

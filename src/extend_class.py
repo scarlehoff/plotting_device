@@ -26,9 +26,10 @@ def draw_labels(axis, plot, show_legend = True):
     """
         If set in the plot object, draw xlabel, ylabel and legend
     """
-    if plot.xlabel: axis.set_xlabel(plot.xlabel)
-    if plot.ylabel: axis.set_ylabel(plot.ylabel)
-    if plot.legend and show_legend: axis.legend()
+    if plot.xlabel: axis.set_xlabel(plot.xlabel, weight = 'medium')
+    if plot.ylabel: axis.set_ylabel(plot.ylabel, weight = 'medium')
+    if plot.legend and show_legend: 
+        axis.legend()
 
 
 def boxxyerrorbar(xmin, xmax, ymin, ymax):
@@ -71,7 +72,7 @@ def gnu_histeps(axis, plot, show_legend = False, draw_labels = True):
     eb = axis.step(plot.xmin, plot.y, where='post', color = plot.color)
     if not plot.color:
         plot.color = eb[0].get_color()
-    axis.step(plot.xmax[-2:], plot.y[-2:], where='pre', color = plot.color)
+    axis.step(plot.xmax[-2:], plot.y[-2:], where='pre', color = plot.color, label = plot.legend)
     if draw_labels:
         axis.draw_labels(plot, show_legend)
 

@@ -72,9 +72,13 @@ def gnu_histeps(axis, plot, show_legend = False, draw_labels = True):
     eb = axis.step(plot.xmin, plot.y, where='post', color = plot.color)
     if not plot.color:
         plot.color = eb[0].get_color()
-    axis.step(plot.xmax[-2:], plot.y[-2:], where='pre', color = plot.color, label = plot.legend)
     if draw_labels:
         axis.draw_labels(plot, show_legend)
+    if show_legend:
+        legend = plot.legend
+    else:
+        legend = None
+    axis.step(plot.xmax[-2:], plot.y[-2:], where='pre', color = plot.color, label = legend)
 
 def gnu_errorbar(axis, plot, padding = 0.05, draw_labels = True, show_legend = True, histeps = False, color = None):
     """

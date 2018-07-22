@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
+import copy
 from NewNumber import NewNumber
 
 class Plot:
@@ -203,13 +204,25 @@ class Plot:
         for data in zipi:
             data_str = [str(i) for i in data]
             print(" ".join(data_str))
+ 
+    def treat_y(self, function_y, error_y = None):
+        """
+        Outputs a plot instance where all y data goes through function function_y
+        dy goes through error_y if given, otherwise is untreated
+        """
+        new_plot = copy.copy(self)
+        new_plot.ymin = [function_y(i) for i in self.ymin]
+        new_plot.ymax = [function_y(i) for i in self.ymax]
+        new_plot.y = [function_y(i) for i in self.y]
+        if error_y:
+            new_plot.stat_err = [error_y(i) for i in self.stat_err]
+        return new_plot
 
     # Overloads
     def __str__(self):
         return "Plot object for '{0}'".format(self.filename)
 
     def _divide_by_NewNumber(self, divide_number):
-        import copy
         new_plot = copy.copy(self)
         new_plot.ymin = self.ymin / divide_number.x
         new_plot.ymax = self.ymax / divide_number.x

@@ -35,9 +35,11 @@ def default_plt():
 
     return plt
 
-def draw_canvas(plt, nrows = 2, ncols = 1, gridspec_kw = None, sharex = True): 
+def draw_canvas(plt, nrows = 2, ncols = 1, gridspec_kw = None, sharex = True, multiscales = False): 
     """
     Call subplots to draw canvas using the gridspec_kw dictionary
+    If multiscales, creates a twinx for each axis, numbered at the end of the normal axis list
+            ie, if there is 4 subplots, the twinx plots indices are axis[4] for axis[0], 5 for 1, etc.
     """
     if not gridspec_kw: # Use default [1,1,1,1]
         ratios = ncols*nrows*[1]
@@ -51,10 +53,16 @@ def draw_canvas(plt, nrows = 2, ncols = 1, gridspec_kw = None, sharex = True):
     fig, axis = plt.subplots(nrows, ncols, sharex = sharex, gridspec_kw = gridspec_kw)
     if isinstance(axis, np.ndarray):  
         axis = [ec.extend_all(i) for i in axis]
-        return fig, axis
     else:
-        axis = ec.extend_all(axis)
-        return fig, [axis]
+        axis = [ec.extend_all(axis)]
+    if multiscales:
+        tmp = []
+        for axe in axis:
+            tmp_axe = axe.twinx()
+            tmp.append(ec.extend_all(tmp_axe))
+        axis += tmp
+
+    return fig, axis
 
 def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), n_ticks = 4, format_tick = "%.0f", keep_limits = False, mode = 'landscape'):
     """

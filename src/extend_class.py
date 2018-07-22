@@ -72,13 +72,15 @@ def gnu_histeps(axis, plot, show_legend = False, draw_labels = True):
     eb = axis.step(plot.xmin, plot.y, where='post', color = plot.color)
     if not plot.color:
         plot.color = eb[0].get_color()
-    if draw_labels:
-        axis.draw_labels(plot, show_legend)
     if show_legend:
         legend = plot.legend
     else:
         legend = None
     axis.step(plot.xmax[-2:], plot.y[-2:], where='pre', color = plot.color, label = legend)
+    if draw_labels:
+        axis.draw_labels(plot, show_legend)
+    if isinstance(show_legend, (str, tuple, list)):
+        axis.legend(loc = show_legend)
 
 def gnu_errorbar(axis, plot, padding = 0.05, draw_labels = True, show_legend = True, histeps = False, color = None):
     """
@@ -109,6 +111,37 @@ def gnu_errorbar(axis, plot, padding = 0.05, draw_labels = True, show_legend = T
         axis.draw_labels(plot, show_legend)
 
     axis.grid(linestyle = '--')
+
+def gnu_line(axis, plot, padding = 0.05, draw_labels = True, show_legend = True, histeps = False, color = None):
+    """
+    Plot x, y, dy in a gnuplot-like style
+    axis should be a matplotlib axis object 
+    plot should be from src.Plot
+    
+    if histeps = True is selected, gnuplot-like histeps are also printed
+    """
+    # Set up the limits (make sure we don't override previous limits)
+    axis.update_limits(plot, padding = padding)
+
+    # If the plot contains a color and there is no color in the input arguments, use that:
+    if not color:
+        color = plot.color
+
+    # Plot errorbars
+    eb = axis.plot(plot.x, plot.y, label=plot.legend, color = color)
+    if not color: # maybe the plot did not contain a color, let's give it some color!
+        color = eb[0].get_color()
+        # Update the plot color
+        plot.set_plot_parameters(color = color)
+
+    if histeps:
+        axis.gnu_histeps(plot, draw_labels = False)
+
+    if draw_labels:
+        axis.draw_labels(plot, show_legend)
+
+    axis.grid(linestyle = '--')
+
 
 def relimit(axis, n_ticks = 4, line_one = False, padding = 1.05, enforce_lims = None):
     """ 
@@ -167,6 +200,7 @@ def extend_all(plt):
     plt.gnu_histeps  = MethodType(gnu_histeps , plt)
     plt.update_limits = MethodType(update_limits, plt)
     plt.draw_labels   = MethodType(draw_labels  , plt)
+    plt.gnu_line = MethodType(gnu_line, plt)
     plt.relimit = MethodType(relimit, plt)
     plt.keep_limits = False
     plt.gnu_extended_object = "new"

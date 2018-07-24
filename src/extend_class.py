@@ -47,6 +47,7 @@ def draw_boxxyerrorbar(axis, plot, alpha=0.25, draw_labels = False):
     """
     Gnuplot-like errorbars
     """
+    axis.update_limits(plot, padding = 0.05)
     from matplotlib.collections import PatchCollection
     r = boxxyerrorbar(plot.xmin, plot.xmax, plot.ymin, plot.ymax)
     pc = PatchCollection(r, facecolor=plot.color, 

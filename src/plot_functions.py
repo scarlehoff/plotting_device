@@ -7,7 +7,7 @@ def default_plt():
     font_family = 'sans-serif'
     font = 'Iosevka'
     text_weight = 'medium'
-    label_size = 19
+    label_size = 22
     capsize = 4
 
     plt.rcParams['font.family'] = font_family
@@ -17,12 +17,18 @@ def default_plt():
     plt.rcParams['ytick.labelsize'] = label_size
     plt.rcParams['errorbar.capsize'] = capsize
 
+    # Grid
+    plt.rcParams['grid.linestyle'] = '--'
+
+    # Generic lines
+    plt.rcParams['lines.linewidth'] = 2.0
+
     # Legend
-    plt.rcParams['legend.fontsize'] = label_size-5
+    plt.rcParams['legend.fontsize'] = label_size-4
     plt.rcParams['legend.frameon'] = False
 
     # Axes
-    plt.rcParams['axes.linewidth'] = 1.5
+    plt.rcParams['axes.linewidth'] = 2.2
     plt.rcParams['axes.labelsize'] = label_size
     plt.rcParams['axes.titlesize'] = label_size 
 
@@ -74,13 +80,15 @@ def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), n_ticks
     """
     if mode == 'landscape':
         rit = 2.0
+        top = 1.0
     elif mode == 'portrait':
-        rit = 0.5
+        rit = 0.8
+        top = 2.4
     else:
         rit = 2.0
     from matplotlib.ticker import FormatStrFormatter
     gridspec_kw = { 'height_ratios' : ratio, 'hspace' : 0,
-            'left' : 0.0, 'right' : rit, 'bottom' : 0.0, 'top' : 1.0 }
+            'left' : 0.0, 'right' : rit, 'bottom' : 0.0, 'top' : top }
     fig, axis = draw_canvas(plt, 2, 1, gridspec_kw = gridspec_kw)
 
     axis[0].yaxis.set_major_formatter(FormatStrFormatter(format_tick))

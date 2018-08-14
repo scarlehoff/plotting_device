@@ -82,7 +82,7 @@ def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), n_ticks
         rit = 2.0
         top = 1.0
     elif mode == 'portrait':
-        rit = 0.8
+        rit = 0.9
         top = 2.4
     else:
         rit = 2.0

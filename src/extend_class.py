@@ -63,7 +63,7 @@ def draw_boxxyerrorbar(axis, plot, alpha=0.25, draw_labels = False):
         axis.draw_labels(plot)
     axis.add_collection(pc)
 
-def gnu_histeps(axis, plot, show_legend = False, draw_labels = True):
+def gnu_histeps(axis, plot, show_legend = False, draw_labels = True, draw_grid = True):
     """
     Equivalent to gnuplot histeps. 
     """
@@ -82,6 +82,8 @@ def gnu_histeps(axis, plot, show_legend = False, draw_labels = True):
         axis.draw_labels(plot, show_legend)
     if isinstance(show_legend, (str, tuple, list)):
         axis.legend(loc = show_legend)
+    if draw_grid:
+        axis.grid(linestyle = '--')
 
 def gnu_errorbar(axis, plot, padding = 0.05, draw_labels = True, show_legend = True, histeps = False, color = None):
     """

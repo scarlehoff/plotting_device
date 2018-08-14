@@ -34,6 +34,7 @@ class Plot:
         else:
             raise Exception("Read the documentation for this software you prick")
         self._cook_data()
+        self.rebinned = 1 # 1 == not-rebinned, 1:1 relation with the file
 
     # Setters
 
@@ -131,6 +132,49 @@ class Plot:
             self.stat_err = y_data[-1]
         else:
             self.stat_err = np.zeros(len(self.x))
+
+    # Data treatment
+
+    def rebin(self, nrebin = 2):
+        """
+        Join together every two bins (work in progress) 
+        TODO: make it work for non-equal bin sizes 
+        TODO: make it work for n != 2
+        """
+        if self.rebinned >= nrebin:
+            print("Plot already rebinned for n={0}".format(nrebin))
+            return
+        nrebin_f = float(nrebin)
+        total_n = len(self.y)
+        xm = [] ; xc = [] ; xp = [];
+        ny = [] ; ndy = [] ; nym = [] ; nyp = []
+        for n in range(1, total_n, nrebin):
+            # Sanity check
+            if nrebin == 2 and self.xmax[n-1] != self.xmin[n]:
+                print("Something went wront")
+                raise Exception("Broken function rebin Plot.py")
+            xm.append(self.xmin[n-1])
+            xc.append(self.xmin[n])
+            xp.append(self.xmax[n])
+            
+            nyp.append( (self.ymax[n-1]+self.ymax[n])/nrebin_f )
+            nym.append( (self.ymin[n-1]+self.ymin[n])/nrebin_f )
+
+            yl = NewNumber(self.y[n-1], self.stat_err[n-1])
+            yr = NewNumber(self.y[n], self.stat_err[n])
+            yc = (yl + yr)/nrebin_f
+            ny.append(yc.x)
+            ndy.append(yc.dx)
+        self.xmax     = np.array(xp)
+        self.xmin     = np.array(xm)
+        self.x        = np.array(xc)
+        self.ymin     = np.array(nym)
+        self.ymax     = np.array(nyp)
+        self.y        = np.array(ny)
+        self.stat_err = np.array(ndy)
+        self._cook_data()
+        self.rebinned = nrebin*self.rebinned
+            
 
     def _cook_data(self):
         """

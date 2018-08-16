@@ -139,32 +139,43 @@ class Plot:
         """
         Join together every two bins (work in progress) 
         TODO: make it work for non-equal bin sizes 
-        TODO: make it work for n != 2
         """
         if self.rebinned >= nrebin:
             print("Plot already rebinned for n={0}".format(nrebin))
             return
+        nrebin = int(nrebin/self.rebinned)
         nrebin_f = float(nrebin)
         total_n = len(self.y)
         xm = [] ; xc = [] ; xp = [];
         ny = [] ; ndy = [] ; nym = [] ; nyp = []
-        for n in range(1, total_n, nrebin):
+        for n in range(nrebin-1, total_n, nrebin):
+            left_bin = n-(nrebin-1)
+            right_bin = n
             # Sanity check
             if nrebin == 2 and self.xmax[n-1] != self.xmin[n]:
                 print("Something went wront")
                 raise Exception("Broken function rebin Plot.py")
-            xm.append(self.xmin[n-1])
-            xc.append(self.xmin[n])
-            xp.append(self.xmax[n])
-            
-            nyp.append( (self.ymax[n-1]+self.ymax[n])/nrebin_f )
-            nym.append( (self.ymin[n-1]+self.ymin[n])/nrebin_f )
+            xleft = self.xmin[left_bin]
+            xright = self.xmax[right_bin]
+            xcenter = xleft + (xright-xleft)/2.0
+            xm.append(xleft)
+            xc.append(xcenter)
+            xp.append(xright)
 
-            yl = NewNumber(self.y[n-1], self.stat_err[n-1])
-            yr = NewNumber(self.y[n], self.stat_err[n])
-            yc = (yl + yr)/nrebin_f
+            ymax = sum(self.ymax[left_bin : n+1])/nrebin_f
+            nyp.append(ymax)
+
+            ymin = sum(self.ymin[left_bin : n+1])/nrebin_f
+            nym.append(ymin)
+        
+            yc = NewNumber(0.0, 0.0)
+            for i, di in zip(self.y[left_bin:n+1], self.stat_err[left_bin:n+1]):
+                yc += NewNumber(i, di)
+            yc = yc/nrebin_f
+            
             ny.append(yc.x)
             ndy.append(yc.dx)
+
         self.xmax     = np.array(xp)
         self.xmin     = np.array(xm)
         self.x        = np.array(xc)

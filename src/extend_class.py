@@ -2,7 +2,16 @@
 from NewNumber import NewNumber
 import numpy as np
 
-def update_limits(axis, plot, padding = 0.05):
+def format_ticks(axis, new_format_y = None, new_format_x = None):
+    from matplotlib import ticker
+    if new_format_y:
+        formatter = ticker.FormatStrFormatter(new_format_y)
+        axis.yaxis.set_major_formatter(formatter)
+    if new_format_x:
+        formatter = ticker.FormatStrFormatter(new_format_x)
+        axis.xaxis.set_major_formatter(formatter)
+
+def update_limits(axis, plot, padding = 0.05, ):
     """
         Update the limits on the axis of the plot (with a padding from the top of 'padding')
         It looks at the previous limits and enlarge them but never shrinks them
@@ -212,6 +221,7 @@ def extend_all(plt):
     plt.draw_labels   = MethodType(draw_labels  , plt)
     plt.gnu_line = MethodType(gnu_line, plt)
     plt.relimit = MethodType(relimit, plt)
+    plt.format_ticks = MethodType(format_ticks, plt)
     plt.keep_limits = False
     plt.gnu_extended_object = "new"
     return plt

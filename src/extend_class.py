@@ -176,11 +176,18 @@ def relimit(axis, n_ticks = 4, line_one = False, padding = 1.05, enforce_lims = 
         ymin = NewNumber(ymin).ceil(decimals = -pow10) - rounder
 
     deltay = ymax - ymin
-    t_step = deltay / (n_ticks + 1.0)
-    t_step = t_step.ceil(decimals = -pow10)
+    if isinstance(n_ticks, int):
+        t_step = deltay / (n_ticks + 1.0)
+        t_step = t_step.ceil(decimals = -pow10)
 
-    yticks = np.arange(ymin.x, ymax.x, t_step.x)
-    ylabels = [np.around(i,decimals=-pow10) for i in yticks]
+        yticks = np.arange(ymin.x, ymax.x, t_step.x)
+        ylabels = [np.around(i,decimals=-pow10) for i in yticks]
+    elif isinstance(n_ticks, (tuple, list)):
+        yticks = np.array(n_ticks)
+        ylabels = [str(i) for i in yticks]
+
+        t_step = deltay / (len(yticks) + 1.0)
+        t_step = t_step.ceil(decimals = -pow10)
 
     if line_one:
         axis.axhline(y=1, color="black", lw = 1.0)

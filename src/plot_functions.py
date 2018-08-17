@@ -19,6 +19,7 @@ def default_plt():
 
     # Grid
     plt.rcParams['grid.linestyle'] = '--'
+    plt.rcParams['grid.linewidth'] = 0.7
 
     # Generic lines
     plt.rcParams['lines.linewidth'] = 2.0

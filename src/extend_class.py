@@ -189,7 +189,7 @@ def relimit(axis, n_ticks = 4, line_one = False, padding = 1.05, enforce_lims = 
         t_step = deltay / (n_ticks + 1.0)
         t_step = t_step.ceil(decimals = -pow10)
 
-        yticks = np.arange(ymin.x, ymax.x, t_step.x)
+        yticks = [np.around(i, decimals=-pow10) for i in  np.arange(ymin.x, ymax.x, t_step.x)]
         ylabels = [np.around(i,decimals=-pow10) for i in yticks]
     elif isinstance(n_ticks, (tuple, list)):
         yticks = np.array(n_ticks)

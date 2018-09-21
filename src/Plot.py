@@ -57,7 +57,7 @@ class Plot:
         if not self.quiet:
             print(msg)
 
-    def _create_envelope(self, arrays):
+    def _create_envelope(self, arrays, mode_x = False):
         """
         From some set of arrays it returns a central value, a minimum and maximum
         """
@@ -66,6 +66,10 @@ class Plot:
         if la == 1:
             min_arr = np.array(arrays[0])
             max_arr = np.array(arrays[0])
+        elif la == 2 and mode_x:
+            min_arr = np.array(arrays[0])
+            max_arr = np.array(arrays[1])
+            center  = np.array([ (i+j)/2.0 for i,j in zip(min_arr, max_arr) ])
         elif la == 2:
             error = np.array(arrays[1])
             min_arr = center - error
@@ -105,7 +109,7 @@ class Plot:
         last_col = max(columns_x + columns_y)
         data = np.loadtxt(filename, comments=comments, usecols=range(last_col + 1), unpack=True, ndmin = 2)
     
-        self.x, self.xmin, self.xmax = self._create_envelope(data[columns_x])
+        self.x, self.xmin, self.xmax = self._create_envelope(data[columns_x], mode_x = True)
         self.y, self.ymin, self.ymax = self._create_envelope(data[columns_y])
 
         if len(columns_y) % 2 == 0:

@@ -71,7 +71,7 @@ def draw_canvas(plt, nrows = 2, ncols = 1, gridspec_kw = None, sharex = True, mu
 
     return fig, axis
 
-def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), n_ticks = 4, format_tick = "%.0f", keep_limits = False, mode = 'landscape'):
+def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), n_ticks = 4, format_tick = "%.0f", keep_limits = False, mode = 'landscape', size = None):
     """
     Create a figure for a plot-ratio 
     ratio: ratio between proper plot and ratio_plot (default, plot 1.5 times bigger than ratio, [1.5,1])
@@ -79,14 +79,20 @@ def canvas_plot_and_ratio(plt, ratio = [1.5,1], ratio_range = (0.5,1.5), n_ticks
     n_ticks: how many ticks to print
     format_tick: default format tick for plot (default %.0f)
     """
+    if size:
+        rit = size[0]
+        top = size[1]
     if mode == 'landscape':
-        rit = 2.0
-        top = 1.0
+        if not size:
+            rit = 2.0
+            top = 1.0
     elif mode == 'portrait':
-        rit = 0.9
-        top = 2.4
+        if not size:
+            rit = 0.9
+            top = 2.4
     else:
-        rit = 2.0
+        if not size:
+            rit = 2.0
     from matplotlib.ticker import FormatStrFormatter
     gridspec_kw = { 'height_ratios' : ratio, 'hspace' : 0,
             'left' : 0.0, 'right' : rit, 'bottom' : 0.0, 'top' : top }
